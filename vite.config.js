@@ -1,19 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  build: {
+    outDir: 'dist', // Vercel expects this
+    assetsDir: 'assets',
+    sourcemap: false, // Disable in production for security and smaller bundles
+    minify: 'esbuild', // Faster minification
+  },
   server: {
     port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-      }
-    }
+    open: true, // Open browser on dev
   },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
-})
+});
