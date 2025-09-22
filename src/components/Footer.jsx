@@ -1,42 +1,41 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { 
-  GraduationCap, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
+import React from "react";
+import { Link } from "react-router-dom";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Facebook,
+  Twitter,
+  Instagram,
   Youtube,
   Clock,
-  Award
-} from 'lucide-react'
+  Award,
+} from "lucide-react";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { name: 'About Us', path: '/about' },
-    { name: 'Courses', path: '/courses' },
-    { name: 'Achievements', path: '/achievements' },
-    { name: 'Gallery', path: '/gallery' },
-    { name: 'Contact', path: '/contact' },
-  ]
+    { name: "About Us", path: "/about" },
+    { name: "Courses", path: "/courses" },
+    { name: "Achievements", path: "/achievements" },
+    { name: "Gallery", path: "/gallery" },
+    { name: "Contact", path: "/contact" },
+  ];
 
   const courses = [
-    { name: 'JEE Main & Advanced', path: '/courses' },
-    { name: 'NEET Preparation', path: '/courses' },
-    { name: 'Class 10 CBSE', path: '/courses' },
-    { name: 'Class 12 CBSE', path: '/courses' },
-  ]
+    { name: "JEE Main & Advanced", path: "/courses" },
+    { name: "NEET Preparation", path: "/courses" },
+    { name: "Class 10 CBSE", path: "/courses" },
+    { name: "Class 12 CBSE", path: "/courses" },
+  ];
 
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
-  ]
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+    { icon: Youtube, href: "#", label: "YouTube" },
+  ];
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -46,27 +45,34 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-primary-600 rounded-lg">
-                <GraduationCap className="h-6 w-6 text-white" />
+              <div className="h-13 w-13 bg-white rounded-full">
+                <img
+                  src="/logo1.png"
+                  alt="Masters Academy Logo"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <h3 className="text-xl font-display font-bold">
                   Masters Academy
                 </h3>
                 <p className="text-sm text-gray-400">
-                  Illuminating Minds, Shaping Futures
+                  See The Difference, That Makes The Difference
                 </p>
               </div>
             </div>
-            
+
             <p className="text-gray-300 leading-relaxed">
-              Empowering students with quality education and comprehensive preparation 
-              for competitive exams and academic excellence since 2008.
+              Empowering students with quality education and comprehensive
+              preparation for competitive exams and academic excellence since
+              2008.
             </p>
 
             <div className="flex items-center space-x-2 text-secondary-400">
               <Award className="h-5 w-5" />
-              <span className="text-sm font-medium">15+ Years of Excellence</span>
+              <span className="text-sm font-medium">
+                15+ Years of Excellence
+              </span>
             </div>
 
             {/* Social Links */}
@@ -128,8 +134,10 @@ const Footer = () => {
                 <MapPin className="h-5 w-5 text-primary-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    123 Education Street,<br />
-                    Knowledge City, State 123456<br />
+                    123 Education Street,
+                    <br />
+                    Knowledge City, State 123456
+                    <br />
                     India
                   </p>
                 </div>
@@ -138,8 +146,8 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-primary-400 flex-shrink-0" />
                 <div>
-                  <a 
-                    href="tel:+911234567890" 
+                  <a
+                    href="tel:+911234567890"
                     className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
                   >
                     +91 12345 67890
@@ -150,8 +158,8 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-primary-400 flex-shrink-0" />
                 <div>
-                  <a 
-                    href="mailto:info@mastersacademy.com" 
+                  <a
+                    href="mailto:info@mastersacademy.com"
                     className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
                   >
                     info@mastersacademy.com
@@ -163,7 +171,8 @@ const Footer = () => {
                 <Clock className="h-5 w-5 text-primary-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300 text-sm">
-                    Mon - Sat: 8:00 AM - 8:00 PM<br />
+                    Mon - Sat: 8:00 AM - 8:00 PM
+                    <br />
                     Sunday: 9:00 AM - 5:00 PM
                   </p>
                 </div>
@@ -182,22 +191,22 @@ const Footer = () => {
                 © {currentYear} Masters Academy. All rights reserved.
               </p>
             </div>
-            
+
             <div className="flex flex-wrap justify-center md:justify-end space-x-6 text-sm">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="text-gray-400 hover:text-primary-400 transition-colors duration-200"
               >
                 Privacy Policy
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="text-gray-400 hover:text-primary-400 transition-colors duration-200"
               >
                 Terms of Service
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="text-gray-400 hover:text-primary-400 transition-colors duration-200"
               >
                 Refund Policy
@@ -207,7 +216,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

@@ -65,14 +65,14 @@ const Gallery = () => {
 
   if (loading) {
     return (
-      <div className="pt-16 md:pt-20 min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="loading-spinner w-8 h-8" />
       </div>
     )
   }
 
   return (
-    <div className="pt-16 md:pt-20">
+    <div className="relative">
       {/* Hero Section */}
       <section className="section-padding hero-gradient">
         <div className="container-custom">
@@ -220,57 +220,6 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Featured Categories */}
-      <section className="section-padding bg-gray-50">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Popular Categories
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the most popular categories in our gallery
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: 'Events', count: galleryItems.filter(item => item.category === 'Events').length, color: 'bg-blue-500' },
-              { name: 'Academic', count: galleryItems.filter(item => item.category === 'Academic').length, color: 'bg-green-500' },
-              { name: 'Cultural', count: galleryItems.filter(item => item.category === 'Cultural').length, color: 'bg-purple-500' },
-              { name: 'Sports', count: galleryItems.filter(item => item.category === 'Sports').length, color: 'bg-orange-500' }
-            ].map((category, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="card p-6 text-center hover:shadow-xl transition-all duration-300"
-              >
-                <div className={`w-12 h-12 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                  <Image className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {category.name}
-                </h3>
-                <p className="text-2xl font-bold text-primary-600 mb-1">
-                  {category.count}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Images
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="section-padding bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <div className="container-custom text-center">
@@ -293,14 +242,12 @@ const Gallery = () => {
                 className="btn-secondary inline-flex items-center justify-center"
               >
                 Explore Courses
-                <Camera className="ml-2 h-5 w-5" />
               </a>
               <a
                 href="/contact"
                 className="bg-white text-primary-600 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg transition-colors duration-200 inline-flex items-center justify-center"
               >
                 Contact Us
-                <Image className="ml-2 h-5 w-5" />
               </a>
             </div>
           </motion.div>

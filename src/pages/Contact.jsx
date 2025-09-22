@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
   MapPin, 
@@ -8,7 +8,8 @@ import {
   MessageSquare,
   Navigation,
   Users,
-  Award
+  Award,
+  ChevronDown
 } from 'lucide-react'
 import ContactForm from '../components/ContactForm'
 
@@ -105,6 +106,14 @@ const Contact = () => {
       answer: 'Yes, we provide comprehensive study materials, practice tests, and access to our digital library for all enrolled students.'
     }
   ]
+
+  // State to track which FAQ is open
+  const [openFaq, setOpenFaq] = useState(null)
+
+  // Toggle function for FAQs
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index)
+  }
 
   return (
     <div className="pt-16 md:pt-20">
@@ -256,66 +265,6 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Departments Section */}
-      <section className="section-padding bg-gray-50">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Contact Departments
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Reach out to the right department for faster assistance
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {departments.map((dept, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="card p-6"
-              >
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {dept.name}
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  {dept.description}
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <Phone className="h-4 w-4 text-primary-600 mr-2" />
-                    <a 
-                      href={`tel:${dept.phone}`}
-                      className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
-                    >
-                      {dept.phone}
-                    </a>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Mail className="h-4 w-4 text-primary-600 mr-2" />
-                    <a 
-                      href={`mailto:${dept.email}`}
-                      className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
-                    >
-                      {dept.email}
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ Section */}
       <section className="section-padding bg-white">
         <div className="container-custom">
@@ -334,7 +283,7 @@ const Contact = () => {
             </p>
           </motion.div>
 
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
@@ -342,15 +291,34 @@ const Contact = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6"
+                className="card border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-start">
-                  <MessageSquare className="h-5 w-5 text-primary-600 mr-3 mt-0.5 flex-shrink-0" />
-                  {faq.question}
-                </h3>
-                <p className="text-gray-600 leading-relaxed ml-8">
-                  {faq.answer}
-                </p>
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full flex items-center justify-between text-left text-lg font-semibold text-gray-900 p-4 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-opacity-50"
+                  aria-expanded={openFaq === index}
+                  aria-controls={`faq-answer-${index}`}
+                >
+                  <div className="flex items-center">
+                    <MessageSquare className="h-5 w-5 text-primary-600 mr-3 flex-shrink-0" />
+                    <span>{faq.question}</span>
+                  </div>
+                  <ChevronDown
+                    className={`h-5 w-5 text-gray-500 transform transition-transform duration-200 ${
+                      openFaq === index ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div
+                  id={`faq-answer-${index}`}
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                    openFaq === index ? 'max-h-96 opacity-100 p-4 pt-0' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <p className="text-gray-600 leading-relaxed ml-8">
+                    {faq.answer}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>

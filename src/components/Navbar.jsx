@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, GraduationCap, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Navbar = () => {
@@ -45,15 +45,30 @@ const Navbar = () => {
             to="/" 
             className="flex items-center space-x-3 group"
           >
-            <div className="p-2 bg-primary-600 rounded-lg group-hover:bg-primary-700 transition-colors duration-200">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="flex-shrink-0">
+              <img 
+                src="/logo1.png" 
+                alt="Masters Academy Logo" 
+                className="h-10 w-10 md:h-12 md:w-12 object-contain group-hover:scale-105 transition-transform duration-200"
+                onError={(e) => {
+                  // Fallback if logo fails to load
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'block'
+                }}
+              />
+              {/* Fallback div with text logo */}
+              <div 
+                className="h-10 w-10 md:h-12 md:w-12 bg-[#183883] rounded-lg flex items-center justify-center text-white font-bold text-lg md:text-xl group-hover:bg-[#DFBC2D] transition-colors duration-200 hidden"
+              >
+                MA
+              </div>
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-display font-bold text-gray-900">
                 Masters Academy
               </h1>
               <p className="text-xs text-gray-600 hidden md:block">
-                Illuminating Minds, Shaping Futures
+                See The Difference, That Makes The Difference
               </p>
             </div>
           </Link>
@@ -66,17 +81,17 @@ const Navbar = () => {
                 to={item.path}
                 className={`relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                   isActive(item.path)
-                    ? 'text-primary-600'
+                    ? 'text-[#183883]'
                     : isScrolled
-                    ? 'text-gray-700 hover:text-primary-600'
-                    : 'text-gray-800 hover:text-primary-600'
+                    ? 'text-gray-700 hover:text-[#183883]'
+                    : 'text-gray-800 hover:text-[#183883]'
                 }`}
               >
                 {item.name}
                 {isActive(item.path) && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#183883]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
@@ -87,7 +102,7 @@ const Navbar = () => {
             {/* CTA Button */}
             <Link
               to="/contact"
-              className="btn-primary text-sm"
+              className="px-6 py-3 bg-[#183883] text-white font-semibold text-sm rounded-lg hover:bg-black transition-colors duration-200 shadow-md hover:shadow-lg"
             >
               Enroll Now
             </Link>
@@ -129,8 +144,8 @@ const Navbar = () => {
                       to={item.path}
                       className={`block px-4 py-3 text-base font-medium transition-colors duration-200 ${
                         isActive(item.path)
-                          ? 'text-primary-600 bg-primary-50 border-r-4 border-primary-600'
-                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                          ? 'text-[#183883] bg-[#183883]/5 border-r-4 border-[#183883]'
+                          : 'text-gray-700 hover:text-[#183883] hover:bg-gray-50'
                       }`}
                     >
                       {item.name}
@@ -146,7 +161,7 @@ const Navbar = () => {
                 >
                   <Link
                     to="/contact"
-                    className="btn-primary w-full text-center"
+                    className="block w-full text-center px-6 py-3 bg-[#183883] text-white font-semibold rounded-lg hover:bg-black transition-colors duration-200"
                   >
                     Enroll Now
                   </Link>

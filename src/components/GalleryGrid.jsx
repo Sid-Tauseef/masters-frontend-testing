@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { X, Calendar, Tag, ZoomIn } from 'lucide-react'
+import { X, Calendar, Tag, ZoomIn, Star, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const GalleryGrid = ({ items = [] }) => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [filter, setFilter] = useState('All')
+  const [selectedIndex, setSelectedIndex] = useState(null)
 
   const categories = ['All', ...new Set(items.map(item => item.category))]
 
@@ -18,6 +19,21 @@ const GalleryGrid = ({ items = [] }) => {
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const handleImageClick = (item, index) => {
+    setSelectedImage(item)
+    setSelectedIndex(index)
+  }
+
+  const handlePrev = () => {
+    setSelectedIndex((prevIndex) => (prevIndex - 1 + filteredItems.length) % filteredItems.length)
+    setSelectedImage(filteredItems[(selectedIndex - 1 + filteredItems.length) % filteredItems.length])
+  }
+
+  const handleNext = () => {
+    setSelectedIndex((prevIndex) => (prevIndex + 1) % filteredItems.length)
+    setSelectedImage(filteredItems[(selectedIndex + 1) % filteredItems.length])
   }
 
   return (
@@ -51,7 +67,7 @@ const GalleryGrid = ({ items = [] }) => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => setSelectedImage(item)}
+              onClick={() => handleImageClick(item, index)}
             >
               {/* Image */}
               <div className="aspect-w-16 aspect-h-12 overflow-hidden">
@@ -142,68 +158,105 @@ const GalleryGrid = ({ items = [] }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
+            className="fixed top-0 left-0 w-screen h-screen z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md"
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="relative max-w-4xl max-h-full"
+              className="relative flex w-full max-w-6xl h-[80vh] bg-white/10 rounded-xl shadow-2xl overflow-hidden border border-white/20"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Navigation Buttons */}
+              <button
+                onClick={handlePrev}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-10 transition-colors duration-200"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                onClick={handleNext}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white rounded-full p-2 z-10 transition-colors duration-200"
+                aria-label="Next image"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+
               {/* Close Button */}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-200"
+                className="absolute top-4 right-16 text-white hover:text-gray-300 transition-colors duration-200 z-10"
+                aria-label="Close modal"
               >
                 <X className="h-8 w-8" />
               </button>
 
-              {/* Image */}
-              <img
-                src={selectedImage.image}
-                alt={selectedImage.title}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg"
-              />
+              {/* Image Section */}
+              <div className="w-1/1.5 h-full overflow-hidden">
+                <img
+                  src={selectedImage.image}
+                  alt={selectedImage.title}
+                  className="w-full h-full object-cover rounded-l-xl"
+                />
+              </div>
 
-              {/* Info */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white rounded-b-lg">
-                <h3 className="text-xl font-semibold mb-2">
-                  {selectedImage.title}
-                </h3>
-                
-                {selectedImage.description && (
-                  <p className="text-gray-200 mb-3">
-                    {selectedImage.description}
-                  </p>
-                )}
-
-                <div className="flex items-center space-x-6 text-sm">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {formatDate(selectedImage.date)}
+              {/* Info Section */}
+              <div className="w-1/3 p-6 text-white bg-gradient-to-r from-black/80 to-transparent flex flex-col justify-between">
+                <div>
+                  {/* Category Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                      {selectedImage.category}
+                    </span>
                   </div>
-                  
-                  <div className="flex items-center">
-                    <Tag className="h-4 w-4 mr-2" />
-                    {selectedImage.category}
-                  </div>
-                </div>
 
-                {/* Tags */}
-                {selectedImage.tags && selectedImage.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {selectedImage.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-md text-xs"
-                      >
-                        #{tag}
+                  {/* Featured Badge */}
+                  {selectedImage.featured && (
+                    <div className="absolute top-4 right-4">
+                      <span className="bg-secondary-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center">
+                        <Star className="h-3 w-3 mr-1 fill-current" />
+                        Featured
                       </span>
-                    ))}
+                    </div>
+                  )}
+
+                  <h3 className="text-2xl font-semibold mb-4">
+                    {selectedImage.title}
+                  </h3>
+
+                  {selectedImage.description && (
+                    <p className="text-gray-200 mb-4 text-base">
+                      {selectedImage.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center space-x-6 mb-4">
+                    <div className="flex items-center">
+                      <Calendar className="h-5 w-5 mr-2 text-gray-300" />
+                      <span className="text-sm">{formatDate(selectedImage.date)}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Tag className="h-5 w-5 mr-2 text-gray-300" />
+                      <span className="text-sm">{selectedImage.category}</span>
+                    </div>
                   </div>
-                )}
+
+                  {/* Tags */}
+                  {selectedImage.tags && selectedImage.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedImage.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-md text-sm"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </motion.div>
