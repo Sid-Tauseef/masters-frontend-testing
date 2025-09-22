@@ -146,7 +146,7 @@ const Login = () => {
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-sm font-medium text-gray-900 mb-2">Demo Credentials:</h3>
             <div className="text-sm text-gray-600 space-y-1">
-              <p><strong>Email:</strong> admin@radianceacademy.com</p>
+              <p><strong>Email:</strong> admin@mastersacademy.com</p>
               <p><strong>Password:</strong> admin123</p>
             </div>
           </div>

@@ -151,10 +151,10 @@ const Footer = () => {
                 <Mail className="h-5 w-5 text-primary-400 flex-shrink-0" />
                 <div>
                   <a 
-                    href="mailto:info@radianceacademy.com" 
+                    href="mailto:info@mastersacademy.com" 
                     className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
                   >
-                    info@radianceacademy.com
+                    info@mastersacademy.com
                   </a>
                 </div>
               </div>

@@ -40,9 +40,9 @@ const Contact = () => {
       icon: Mail,
       title: 'Email Us',
       details: [
-        'info@radianceacademy.com',
-        'admissions@radianceacademy.com',
-        'support@radianceacademy.com'
+        'info@mastersacademy.com',
+        'admissions@mastersacademy.com',
+        'support@mastersacademy.com'
       ],
       action: 'Send Email',
       actionIcon: Mail
@@ -64,25 +64,25 @@ const Contact = () => {
     {
       name: 'Admissions Office',
       phone: '+91 12345 67890',
-      email: 'admissions@radianceacademy.com',
+      email: 'admissions@mastersacademy.com',
       description: 'For course enrollment and admission queries'
     },
     {
       name: 'Academic Support',
       phone: '+91 12345 67891',
-      email: 'academic@radianceacademy.com',
+      email: 'academic@mastersacademy.com',
       description: 'For academic guidance and course-related questions'
     },
     {
       name: 'Student Services',
       phone: '+91 12345 67892',
-      email: 'students@radianceacademy.com',
+      email: 'students@mastersacademy.com',
       description: 'For student support and general assistance'
     },
     {
       name: 'Career Counseling',
       phone: '+91 12345 67893',
-      email: 'careers@radianceacademy.com',
+      email: 'careers@mastersacademy.com',
       description: 'For career guidance and counseling services'
     }
   ]
