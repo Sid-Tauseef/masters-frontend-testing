@@ -1,8 +1,8 @@
-import React from 'react'
-import { Clock, Users, Star, ArrowRight, BookOpen, Award } from 'lucide-react'
-import { motion } from 'framer-motion'
+import React from "react";
+import { Clock, Users, Star, ArrowRight, BookOpen, Award } from "lucide-react";
+import { motion } from "framer-motion";
 
-const CourseCard = ({ course, index = 0 }) => {
+const CourseCard = ({ course, index = 0, shouldAnimate = true }) => {
   const {
     title,
     shortDescription,
@@ -14,35 +14,35 @@ const CourseCard = ({ course, index = 0 }) => {
     instructor,
     enrollmentCount = 0,
     rating = 0,
-    features = []
-  } = course
+    features = [],
+  } = course;
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price)
-  }
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   const getLevelColor = (level) => {
     switch (level) {
-      case 'Beginner':
-        return 'bg-green-100 text-green-700'
-      case 'Intermediate':
-        return 'bg-yellow-100 text-yellow-700'
-      case 'Advanced':
-        return 'bg-red-100 text-red-700'
+      case "Beginner":
+        return "bg-green-100 text-green-700";
+      case "Intermediate":
+        return "bg-yellow-100 text-yellow-700";
+      case "Advanced":
+        return "bg-red-100 text-red-700";
       default:
-        return 'bg-gray-100 text-gray-700'
+        return "bg-gray-100 text-gray-700";
     }
-  }
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
+      initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+      animate={shouldAnimate ? { opacity: 1, y: 0 } : false}
+      transition={shouldAnimate ? { delay: index * 0.1, duration: 0.6 } : false}
       className="card group overflow-hidden"
     >
       {/* Image */}
@@ -51,14 +51,22 @@ const CourseCard = ({ course, index = 0 }) => {
           src={image}
           alt={title}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          loading="lazy" // Add this line
+          decoding="async" // Add this line
+          width="400" // Add this line (adjust to your actual image width)
+          height="266" // Add this line (adjust to your actual image height)
         />
-        
+
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* Level Badge */}
         <div className="absolute top-4 left-4">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getLevelColor(level)}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${getLevelColor(
+              level
+            )}`}
+          >
             {level}
           </span>
         </div>
@@ -130,7 +138,7 @@ const CourseCard = ({ course, index = 0 }) => {
               <Clock className="h-4 w-4 mr-1" />
               {duration}
             </div>
-            
+
             {enrollmentCount > 0 && (
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-1" />
@@ -175,7 +183,7 @@ const CourseCard = ({ course, index = 0 }) => {
         </div>
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default CourseCard
+export default React.memo(CourseCard);
