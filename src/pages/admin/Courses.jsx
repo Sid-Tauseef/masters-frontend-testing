@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
-  Eye, 
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Eye,
   BookOpen,
   Users,
   Clock,
   Star,
   Upload,
   X,
-  Save
-} from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
-import api from '../../utils/api'
+  Save,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import api from "../../utils/api";
 
 const Courses = () => {
-  const [courses, setCourses] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [editingCourse, setEditingCourse] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterCategory, setFilterCategory] = useState('All')
-  const [imagePreview, setImagePreview] = useState(null)
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [imagePreview, setImagePreview] = useState(null);
 
   const {
     register,
@@ -34,151 +34,209 @@ const Courses = () => {
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting }
-  } = useForm()
+    formState: { errors, isSubmitting },
+  } = useForm();
 
-  const categories = ['All', 'Academic', 'Competitive', 'Skill Development', 'Language', 'Other']
-  const levels = ['Beginner', 'Intermediate', 'Advanced']
+  const categories = [
+    "All",
+    "Academic",
+    "Competitive",
+    "Skill Development",
+    "Language",
+    "Other",
+  ];
+  const levels = ["Beginner", "Intermediate", "Advanced"];
 
   useEffect(() => {
-    fetchCourses()
-  }, [])
+    fetchCourses();
+  }, []);
 
   const fetchCourses = async () => {
     try {
-      setLoading(true)
-      const response = await api.get('/courses?limit=100')
-      setCourses(response.data.data.courses || [])
+      setLoading(true);
+      const response = await api.get("/courses?limit=100");
+      setCourses(response.data.data.courses || []);
     } catch (error) {
-      toast.error('Failed to fetch courses')
-      console.error('Error fetching courses:', error)
+      toast.error("Failed to fetch courses");
+      console.error("Error fetching courses:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const onSubmit = async (data) => {
     try {
-      const formData = new FormData()
-      
-      // Append all form fields
-      Object.keys(data).forEach(key => {
-        if (key === 'features') {
-          // Handle features array
-          const features = data[key] ? data[key].split(',').map(f => f.trim()).filter(f => f) : []
-          formData.append(key, JSON.stringify(features))
-        } else if (key === 'instructor') {
-          // Handle instructor object
-          const instructor = {
-            name: data['instructor.name'] || '',
-            qualification: data['instructor.qualification'] || '',
-            experience: data['instructor.experience'] || ''
-          }
-          formData.append(key, JSON.stringify(instructor))
-        } else if (key !== 'image') {
-          formData.append(key, data[key])
+      const formData = new FormData();
+
+      // Append basic fields
+      const basicFields = [
+        "title",
+        "category",
+        "level",
+        "duration",
+        "price",
+        "discountPrice",
+        "shortDescription",
+        "description",
+        "isActive",
+      ];
+
+      basicFields.forEach((field) => {
+        if (data[field] !== undefined && data[field] !== null) {
+          formData.append(field, data[field]);
         }
-      })
+      });
+
+      // Handle features array
+      if (data.features) {
+        const features =
+          typeof data.features === "string"
+            ? data.features
+                .split(",")
+                .map((f) => f.trim())
+                .filter((f) => f)
+            : data.features;
+        formData.append("features", JSON.stringify(features));
+      }
+
+      // Handle instructor object
+      const instructor = {
+        name: data["instructor.name"] || "",
+        qualification: data["instructor.qualification"] || "",
+        experience: data["instructor.experience"] || "",
+      };
+      formData.append("instructor", JSON.stringify(instructor));
+
+      // DEBUG: Log form data before sending
+      console.log("FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
 
       // Append image if selected
-      const imageFile = data.image?.[0]
+      const imageFile = data.image?.[0];
       if (imageFile) {
-        formData.append('image', imageFile)
-      }
-
-      let response
-      if (editingCourse) {
-        response = await api.put(`/courses/${editingCourse._id}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        toast.success('Course updated successfully!')
+        console.log(
+          "Image file selected:",
+          imageFile.name,
+          imageFile.type,
+          imageFile.size
+        );
+        formData.append("image", imageFile);
       } else {
-        response = await api.post('/courses', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        toast.success('Course created successfully!')
+        console.log("No image file selected");
       }
 
-      fetchCourses()
-      handleCloseModal()
+      let response;
+      if (editingCourse) {
+        console.log("Updating course:", editingCourse._id);
+        response = await api.put(`/courses/${editingCourse._id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            // Add these headers for better debugging
+            "X-Debug": "image-update",
+          },
+        });
+        console.log("Update response:", response.data);
+        toast.success("Course updated successfully!");
+      } else {
+        response = await api.post("/courses", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Course created successfully!");
+      }
+
+      fetchCourses();
+      handleCloseModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to save course')
-      console.error('Error saving course:', error)
+      console.error("Error saving course:", error);
+      console.error("Error response:", error.response?.data);
+      toast.error(error.response?.data?.message || "Failed to save course");
     }
-  }
-
+  };
   const handleEdit = (course) => {
-    setEditingCourse(course)
-    
+    setEditingCourse(course);
+
     // Populate form with course data
-    Object.keys(course).forEach(key => {
-      if (key === 'features') {
-        setValue(key, course[key]?.join(', ') || '')
-      } else if (key === 'instructor') {
-        setValue('instructor.name', course.instructor?.name || '')
-        setValue('instructor.qualification', course.instructor?.qualification || '')
-        setValue('instructor.experience', course.instructor?.experience || '')
-      } else if (key !== 'image' && key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt') {
-        setValue(key, course[key])
+    Object.keys(course).forEach((key) => {
+      if (key === "features") {
+        setValue(key, course[key]?.join(", ") || "");
+      } else if (key === "instructor") {
+        setValue("instructor.name", course.instructor?.name || "");
+        setValue(
+          "instructor.qualification",
+          course.instructor?.qualification || ""
+        );
+        setValue("instructor.experience", course.instructor?.experience || "");
+      } else if (
+        key !== "image" &&
+        key !== "_id" &&
+        key !== "__v" &&
+        key !== "createdAt" &&
+        key !== "updatedAt"
+      ) {
+        setValue(key, course[key]);
       }
-    })
-    
-    setImagePreview(course.image)
-    setShowModal(true)
-  }
+    });
+
+    setImagePreview(course.image);
+    setShowModal(true);
+  };
 
   const handleDelete = async (courseId) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
+    if (window.confirm("Are you sure you want to delete this course?")) {
       try {
-        await api.delete(`/courses/${courseId}`)
-        toast.success('Course deleted successfully!')
-        fetchCourses()
+        await api.delete(`/courses/${courseId}`);
+        toast.success("Course deleted successfully!");
+        fetchCourses();
       } catch (error) {
-        toast.error('Failed to delete course')
-        console.error('Error deleting course:', error)
+        toast.error("Failed to delete course");
+        console.error("Error deleting course:", error);
       }
     }
-  }
+  };
 
   const handleCloseModal = () => {
-    setShowModal(false)
-    setEditingCourse(null)
-    setImagePreview(null)
-    reset()
-  }
+    setShowModal(false);
+    setEditingCourse(null);
+    setImagePreview(null);
+    reset();
+  };
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = filterCategory === 'All' || course.category === filterCategory
-    return matchesSearch && matchesCategory
-  })
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch =
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      filterCategory === "All" || course.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price)
-  }
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="loading-spinner w-8 h-8" />
       </div>
-    )
+    );
   }
 
   return (
@@ -186,7 +244,9 @@ const Courses = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Courses Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Courses Management
+          </h1>
           <p className="text-gray-600">Manage your academy courses</p>
         </div>
         <button
@@ -220,8 +280,10 @@ const Courses = () => {
               onChange={(e) => setFilterCategory(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </div>
@@ -245,17 +307,23 @@ const Courses = () => {
                 className="w-full h-48 object-cover"
               />
               <div className="absolute top-4 left-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  course.level === 'Beginner' ? 'bg-green-100 text-green-700' :
-                  course.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-red-100 text-red-700'
-                }`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    course.level === "Beginner"
+                      ? "bg-green-100 text-green-700"
+                      : course.level === "Intermediate"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
                   {course.level}
                 </span>
               </div>
               <div className="absolute top-4 right-4 bg-white rounded-lg px-2 py-1 shadow-md">
                 <span className="text-sm font-bold text-primary-600">
-                  {course.discountPrice ? formatPrice(course.discountPrice) : formatPrice(course.price)}
+                  {course.discountPrice
+                    ? formatPrice(course.discountPrice)
+                    : formatPrice(course.price)}
                 </span>
               </div>
             </div>
@@ -307,10 +375,14 @@ const Courses = () => {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  course.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                }`}>
-                  {course.isActive ? 'Active' : 'Inactive'}
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    course.isActive
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {course.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
             </div>
@@ -322,8 +394,12 @@ const Courses = () => {
       {filteredCourses.length === 0 && (
         <div className="text-center py-12">
           <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
-          <p className="text-gray-600 mb-6">Get started by creating your first course.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No courses found
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Get started by creating your first course.
+          </p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-primary inline-flex items-center"
@@ -338,12 +414,15 @@ const Courses = () => {
       {showModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={handleCloseModal} />
-            
+            <div
+              className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+              onClick={handleCloseModal}
+            />
+
             <div className="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
               <div className="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {editingCourse ? 'Edit Course' : 'Add New Course'}
+                  {editingCourse ? "Edit Course" : "Add New Course"}
                 </h3>
                 <button
                   onClick={handleCloseModal}
@@ -362,12 +441,14 @@ const Courses = () => {
                     </label>
                     <input
                       type="text"
-                      {...register('title', { required: 'Title is required' })}
+                      {...register("title", { required: "Title is required" })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter course title"
                     />
                     {errors.title && (
-                      <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.title.message}
+                      </p>
                     )}
                   </div>
 
@@ -377,16 +458,22 @@ const Courses = () => {
                       Category *
                     </label>
                     <select
-                      {...register('category', { required: 'Category is required' })}
+                      {...register("category", {
+                        required: "Category is required",
+                      })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Select category</option>
-                      {categories.slice(1).map(category => (
-                        <option key={category} value={category}>{category}</option>
+                      {categories.slice(1).map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
                       ))}
                     </select>
                     {errors.category && (
-                      <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.category.message}
+                      </p>
                     )}
                   </div>
 
@@ -396,16 +483,20 @@ const Courses = () => {
                       Level *
                     </label>
                     <select
-                      {...register('level', { required: 'Level is required' })}
+                      {...register("level", { required: "Level is required" })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Select level</option>
-                      {levels.map(level => (
-                        <option key={level} value={level}>{level}</option>
+                      {levels.map((level) => (
+                        <option key={level} value={level}>
+                          {level}
+                        </option>
                       ))}
                     </select>
                     {errors.level && (
-                      <p className="text-red-500 text-sm mt-1">{errors.level.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.level.message}
+                      </p>
                     )}
                   </div>
 
@@ -416,12 +507,16 @@ const Courses = () => {
                     </label>
                     <input
                       type="text"
-                      {...register('duration', { required: 'Duration is required' })}
+                      {...register("duration", {
+                        required: "Duration is required",
+                      })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="e.g., 6 months, 1 year"
                     />
                     {errors.duration && (
-                      <p className="text-red-500 text-sm mt-1">{errors.duration.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.duration.message}
+                      </p>
                     )}
                   </div>
 
@@ -432,12 +527,17 @@ const Courses = () => {
                     </label>
                     <input
                       type="number"
-                      {...register('price', { required: 'Price is required', min: 0 })}
+                      {...register("price", {
+                        required: "Price is required",
+                        min: 0,
+                      })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter price"
                     />
                     {errors.price && (
-                      <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.price.message}
+                      </p>
                     )}
                   </div>
 
@@ -448,7 +548,7 @@ const Courses = () => {
                     </label>
                     <input
                       type="number"
-                      {...register('discountPrice', { min: 0 })}
+                      {...register("discountPrice", { min: 0 })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter discount price"
                     />
@@ -462,12 +562,16 @@ const Courses = () => {
                   </label>
                   <input
                     type="text"
-                    {...register('shortDescription', { required: 'Short description is required' })}
+                    {...register("shortDescription", {
+                      required: "Short description is required",
+                    })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Brief description for course cards"
                   />
                   {errors.shortDescription && (
-                    <p className="text-red-500 text-sm mt-1">{errors.shortDescription.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.shortDescription.message}
+                    </p>
                   )}
                 </div>
 
@@ -477,13 +581,17 @@ const Courses = () => {
                     Full Description *
                   </label>
                   <textarea
-                    {...register('description', { required: 'Description is required' })}
+                    {...register("description", {
+                      required: "Description is required",
+                    })}
                     rows={4}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Detailed course description"
                   />
                   {errors.description && (
-                    <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.description.message}
+                    </p>
                   )}
                 </div>
 
@@ -497,7 +605,7 @@ const Courses = () => {
                       <input
                         type="file"
                         accept="image/*"
-                        {...register('image')}
+                        {...register("image")}
                         onChange={handleImageChange}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       />
@@ -516,7 +624,9 @@ const Courses = () => {
 
                 {/* Instructor Info */}
                 <div className="border-t border-gray-200 pt-6">
-                  <h4 className="text-lg font-medium text-gray-900 mb-4">Instructor Information</h4>
+                  <h4 className="text-lg font-medium text-gray-900 mb-4">
+                    Instructor Information
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -524,7 +634,7 @@ const Courses = () => {
                       </label>
                       <input
                         type="text"
-                        {...register('instructor.name')}
+                        {...register("instructor.name")}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="Instructor name"
                       />
@@ -535,7 +645,7 @@ const Courses = () => {
                       </label>
                       <input
                         type="text"
-                        {...register('instructor.qualification')}
+                        {...register("instructor.qualification")}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="e.g., Ph.D. in Physics"
                       />
@@ -546,7 +656,7 @@ const Courses = () => {
                       </label>
                       <input
                         type="text"
-                        {...register('instructor.experience')}
+                        {...register("instructor.experience")}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         placeholder="e.g., 10+ years"
                       />
@@ -558,7 +668,7 @@ const Courses = () => {
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    {...register('isActive')}
+                    {...register("isActive")}
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
                   <label className="ml-2 block text-sm text-gray-900">
@@ -588,7 +698,7 @@ const Courses = () => {
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        {editingCourse ? 'Update Course' : 'Create Course'}
+                        {editingCourse ? "Update Course" : "Create Course"}
                       </>
                     )}
                   </button>
@@ -599,7 +709,7 @@ const Courses = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Courses
+export default Courses;
